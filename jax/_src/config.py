@@ -1555,11 +1555,16 @@ setattr(Config, "x64_enabled", property(lambda _: enable_x64.value))
 def _update_default_device_global(val):
   lib.jax_jit.global_state().default_device = val
 
+
 def _update_default_device_thread_local(val):
   lib.jax_jit.thread_local_state().default_device = val
 
 def _validate_default_device(val):
-  if val is not None and not isinstance(val, xla_client.Device) and val not in ['cpu', 'gpu', 'tpu']:
+  if (
+    val is not None 
+    and not isinstance(val, xla_client.Device) 
+    and val not in ['cpu', 'gpu', 'tpu']
+  ):
     # TODO(skyewm): this is a workaround for non-PJRT Device types. Remove when
     # all JAX backends use a single C++ device interface.
     if 'Device' in str(type(val)):
@@ -1567,8 +1572,9 @@ def _validate_default_device(val):
           'Allowing non-`xla_client.Device` default device: %s, type: %s',
           repr(val), type(val))
       return
-    raise ValueError('jax.default_device must be passed a Device object (e.g. '
-                     f"`jax.devices('cpu')[0]`), got: {val!r}")
+    raise ValueError('jax.default_device must be provided with either a Device object'
+                     f" (e.g. `jax.devices('cpu')[0]`) or a platform name (e.g. "
+                     f"'cpu'). Received: {val!r}")
 
 default_device = string_or_object_state(
     name='jax_default_device',

@@ -287,9 +287,7 @@ class JitTest(jtu.BufferDonationTestCase):
     self.assertEqual(f(sticky).devices(), system_default_devices)
     self.assertEqual(f(1).devices(), system_default_devices)
 
-  # TODO(skye): make this work!
   def test_jit_default_platform(self):
-
       with jax.default_device("cpu"):
         result = jax.jit(lambda x: x + 1)(1)
       self.assertEqual(result.device.platform, "cpu")
